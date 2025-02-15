@@ -98,7 +98,8 @@ router.post('/login', login);
  *               email:
  *                 type: string
  *               otp:
- *                 type: integer
+ *                 type: string
+ *                 example: "123456"
  *     responses:
  *       200:
  *         description: Email verified successfully

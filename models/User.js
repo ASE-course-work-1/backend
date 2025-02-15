@@ -6,10 +6,16 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   phone: { type: String, required: true },
   nic: { type: String, required: true, unique: true },
-  role: { type: String, enum: ['consumer', 'outlet_manager', 'admin'], default: 'consumer' },
+  role: { 
+    type: String, 
+    enum: ['consumer', 'outlet_manager', 'admin'], 
+    default: 'consumer',
+    required: true 
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-  verificationOTP: Number,
+  isVerified: { type: Boolean, default: false },
+  verificationOTP: String,
   otpExpires: Date
 });
 

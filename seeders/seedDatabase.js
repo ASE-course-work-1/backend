@@ -11,16 +11,16 @@ const seedAdmin = async () => {
     const adminExists = await User.findOne({ email: 'admin@gasbygas.com' });
     
     if (!adminExists) {
-      const hashedPassword = await bcrypt.hash('admin123', 10);
+      const adminPassword = await bcrypt.hash('admin123', 10);
       
-      await User.create({
-        name: 'System Admin',
-        email: 'admin@gasbygas.com',
-        password: hashedPassword,
+      const adminUser = await User.create({
+        name: 'Admin User',
+        email: 'admin@gasbygas.com'.toLowerCase(),
+        password: adminPassword,
+        phone: '0712345678',
+        nic: '200012345678',
         role: 'admin',
-        isVerified: true,
-        phone: '0112345678',
-        nic: '000000000V'
+        isVerified: true
       });
       
       console.log('Admin user created successfully');

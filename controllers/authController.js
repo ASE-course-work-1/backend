@@ -20,7 +20,7 @@ export const register = async (req, res) => {
     // Create user
     const user = await User.create({
       name,
-      email,
+      email: email.toLowerCase(),
       password: hashedPassword,
       phone,
       nic,
@@ -29,7 +29,7 @@ export const register = async (req, res) => {
     });
 
     // Create verification token
-    const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate as string
 
     // Send verification email
     await sendEmail(
@@ -54,24 +54,32 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    console.log('Login attempt for:', email);
-
+    const { email: rawEmail, password } = req.body;
+    const email = rawEmail.toLowerCase().trim();
+    
+    console.log('Login attempt for:', email); // Add logging
     const user = await User.findOne({ email });
+    
     if (!user) {
-      console.log('User not found');
+      console.log('User not found in database');
       return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    // Add admin-specific check
+    if (user.role === 'admin' && !user.isVerified) {
+      user.isVerified = true; // Auto-verify admin if not verified
+      await user.save();
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log('Password mismatch');
+      console.log('Stored password hash:', user.password);
+      console.log('Input password comparison:', await bcrypt.compare(password, user.password));
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // Skip email verification check for admin
     if (!user.isVerified && user.role !== 'admin') {
-      console.log('User not verified');
       return res.status(401).json({ message: 'Please verify your email first' });
     }
 
@@ -82,7 +90,6 @@ export const login = async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
 
-    console.log('Login successful for:', email);
     res.json({
       token,
       user: {
@@ -113,7 +120,7 @@ export const verifyIdentity = async (req, res) => {
     }
 
     // Check if OTP matches
-    if (user.verificationOTP !== parseInt(otp)) {
+    if (user.verificationOTP !== otp) {
       return res.status(400).json({ message: 'Invalid OTP' });
     }
 
