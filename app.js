@@ -4,17 +4,17 @@ import swaggerDocs from './config/swagger.js';
 import authRoutes from './routes/authRoutes.js';
 import gasRequestRoutes from './routes/gasRequestRoutes.js';
 import stockDeliveryRoutes from './routes/stockDeliveryRoutes.js';
-import notificationRoutes from './routes/notificationRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import outletRoutes from './routes/outletRoutes.js';
 import cors from 'cors';
 import morgan from 'morgan';
+import { verifyToken } from './utils/authMiddleware.js';
 
 const app = express();
 
 // Middleware
-app.use(cors());
 app.use(express.json());
+app.use(cors());
 app.use(morgan('dev'));
 
 // Database Connection
@@ -24,7 +24,6 @@ connectDB();
 app.use('/api/auth', authRoutes);
 app.use('/api/requests', gasRequestRoutes);
 app.use('/api/stock', stockDeliveryRoutes);
-app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/outlets', outletRoutes);
 
