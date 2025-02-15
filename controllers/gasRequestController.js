@@ -1,13 +1,16 @@
 import Request from '../models/Request.js';
 import Outlet from '../models/Outlet.js';
+import User from '../models/User.js';
+import { sendEmail } from '../utils/emailSender.js';
+import { newRequestTemplate } from '../utils/emailTemplates.js';
 
 export const requestGas = async (req, res) => {
   try {
-    const { outletId } = req.body;
-    const outlet = await Outlet.findById(outletId);
+    const { outletId, quantity = 1, address } = req.body;
+    const outlet = await Outlet.findById(outletId).populate('manager');
     
-    if (!outlet || outlet.currentStock <= 0) {
-      return res.status(400).json({ message: 'Gas not available at this outlet' });
+    if (!outlet || outlet.currentStock < quantity) {
+      return res.status(400).json({ message: 'Insufficient stock' });
     }
 
     const token = `TKN-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -16,11 +19,26 @@ export const requestGas = async (req, res) => {
       consumerId: req.user.id,
       outletId,
       token,
+      quantity,
+      address,
       status: 'pending'
     });
 
-    outlet.currentStock -= 1;
+    // Get consumer details
+    const consumer = await User.findById(req.user.id);
+    
+    outlet.currentStock -= quantity;
     await outlet.save();
+
+    // Send notification to outlet manager if exists
+    if (outlet.manager?.email) {
+      await sendEmail(
+        outlet.manager.email,
+        'New Gas Request Received',
+        `New request from ${consumer.name}`,
+        newRequestTemplate(consumer, request, outlet)
+      );
+    }
 
     res.status(201).json(request);
   } catch (error) {

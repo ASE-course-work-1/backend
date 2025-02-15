@@ -118,4 +118,62 @@ export const managerAssignmentTemplate = (managerName, outletDetails) => `
       </p>
     </div>
   </div>
+`;
+
+export const newRequestTemplate = (consumer, request, outlet) => `
+  <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
+    <div style="background: linear-gradient(135deg, #3498db, #2c3e50); padding: 32px; text-align: center;">
+      <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">
+        🚚 New Gas Cylinder Request
+      </h1>
+    </div>
+
+    <div style="padding: 32px;">
+      <p style="font-size: 16px; color: #4a5568; line-height: 1.6; margin: 0 0 24px 0;">
+        You have received a new gas request from a consumer. Here are the details:
+      </p>
+
+      <div style="background-color: #f7fafc; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
+        <div style="display: grid; gap: 16px;">
+          <div>
+            <strong>Consumer Name:</strong> ${consumer.name}
+          </div>
+          <div>
+            <strong>Contact Phone:</strong> ${consumer.phone}
+          </div>
+          <div>
+            <strong>Request Token:</strong> ${request.token}
+          </div>
+          <div>
+            <strong>Outlet:</strong> ${outlet.name} (${outlet.location})
+          </div>
+          <div>
+            <strong>Cylinders Requested:</strong> ${request.quantity}
+          </div>
+          <div>
+            <strong>Delivery Address:</strong> ${request.address}
+          </div>
+          <div>
+            <strong>Current Stock:</strong> ${outlet.currentStock}
+          </div>
+          <div>
+            <strong>Request Date:</strong> ${new Date(request.createdAt).toLocaleString()}
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 24px;">
+        <a href="${process.env.BASE_URL}/manager/requests" 
+          style="background-color: #3498db; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500; display: inline-block;">
+          View Request in Dashboard →
+        </a>
+      </div>
+    </div>
+
+    <div style="background-color: #f8f9fa; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
+      <p style="font-size: 12px; color: #718096; margin: 8px 0;">
+        This is an automated notification. Please do not reply directly to this email.
+      </p>
+    </div>
+  </div>
 `; 

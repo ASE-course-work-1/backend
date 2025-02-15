@@ -17,6 +17,17 @@ const requestSchema = new mongoose.Schema({
     enum: ['pending', 'scheduled', 'completed', 'canceled'],
     default: 'pending'
   },
+  quantity: { 
+    type: Number, 
+    required: true,
+    default: 1,
+    min: 1,
+    max: 2
+  },
+  address: {
+    type: String,
+    required: true
+  },
   pickupDate: Date,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }

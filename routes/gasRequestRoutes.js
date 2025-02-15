@@ -33,12 +33,55 @@ router.use(verifyToken, checkRoles(['consumer']));
  *             type: object
  *             required:
  *               - outletId
+ *               - quantity
+ *               - address
  *             properties:
  *               outletId:
  *                 type: string
+ *               quantity:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 2
+ *                 example: 1
+ *               address:
+ *                 type: string
+ *                 example: "123 Main Street, Colombo"
  *     responses:
  *       201:
- *         description: Request created
+ *         description: Request created and outlet manager notified
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 consumerId:
+ *                   type: string
+ *                 outletId:
+ *                   type: string
+ *                 token:
+ *                   type: string
+ *                 quantity:
+ *                   type: number
+ *                 address:
+ *                   type: string
+ *                 status:
+ *                   type: string
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *               example:
+ *                 _id: 65f7b1e66a2d4c3a74e3f4a3
+ *                 consumerId: 65f7b1e66a2d4c3a74e3f4a1
+ *                 outletId: 65f7b1e66a2d4c3a74e3f4a2
+ *                 token: TKN-384752
+ *                 quantity: 1
+ *                 address: "123 Main Street, Colombo"
+ *                 status: pending
+ *                 createdAt: 2024-03-18T12:34:56.789Z
+ *       400:
+ *         description: Gas not available at selected outlet
  */
 router.post('/', 
   verifyToken, checkRoles(['consumer']),
