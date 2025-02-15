@@ -1,0 +1,30 @@
+gas-by-gas/
+├── config/
+│   ├── db.js
+│   └── swagger.js
+├── models/
+│   ├── User.js
+│   ├── Outlet.js
+│   ├── Request.js
+│   ├── Delivery.js
+│   └── Notification.js
+├── routes/
+│   ├── authRoutes.js
+│   ├── gasRequestRoutes.js
+│   ├── stockDeliveryRoutes.js
+│   ├── notificationRoutes.js
+│   └── adminRoutes.js
+├── controllers/
+│   ├── authController.js
+│   ├── gasRequestController.js
+│   ├── stockDeliveryController.js
+│   ├── notificationController.js
+│   └── adminController.js
+├── seeders/
+│   └── seedDatabase.js
+├── utils/
+│   ├── authMiddleware.js
+│   └── apiResponse.js
+├── app.js
+├── package.json
+└── .env 
