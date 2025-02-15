@@ -2,6 +2,7 @@ import express from 'express';
 import { createOutlet, getOutlets, getOutlet, updateOutlet, deleteOutlet, getOutletsPublic, getPublicOutlets, assignManager } from '../controllers/outletController.js';
 import { verifyToken, checkRoles } from '../utils/authMiddleware.js';
 import { registerOutletManager } from '../controllers/authController.js';
+import { updateRequestStatus } from '../controllers/gasRequestController.js';
 
 const router = express.Router();
 
@@ -16,6 +17,11 @@ router.put('/:id', verifyToken, checkRoles(['admin']), updateOutlet);
 router.delete('/:id', verifyToken, checkRoles(['admin']), deleteOutlet);
 router.post('/managers', verifyToken, checkRoles(['admin']), registerOutletManager);
 router.put('/:id/manager', verifyToken, checkRoles(['admin']), assignManager);
+router.put('/requests/:id/status', 
+  verifyToken, 
+  checkRoles(['outlet_manager']), 
+  updateRequestStatus
+);
 
 /**
  * @swagger
@@ -194,6 +200,100 @@ router.put('/:id/manager', verifyToken, checkRoles(['admin']), assignManager);
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/PublicOutlet'
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Request:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           example: 65f7b1e66a2d4c3a74e3f4a3
+ *         consumerId:
+ *           type: string
+ *           example: 65f7b1e66a2d4c3a74e3f4a1
+ *         outletId:
+ *           type: string
+ *           example: 65f7b1e66a2d4c3a74e3f4a2
+ *         token:
+ *           type: string
+ *           example: TKN-384752
+ *         quantity:
+ *           type: number
+ *           example: 1
+ *         address:
+ *           type: string
+ *           example: "123 Main Street, Colombo"
+ *         status:
+ *           type: string
+ *           enum: [pending, processing, delivered, cancelled]
+ *           example: processing
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           example: 2024-03-18T12:34:56.789Z
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           example: 2024-03-18T12:35:10.123Z
+ */
+
+/**
+ * @swagger
+ * /api/outlets/requests/{id}/status:
+ *   put:
+ *     summary: Update gas request status (Outlet Manager only)
+ *     description: Update the status of a gas request and notify the consumer via email
+ *     tags: [Outlets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ID of the gas request
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [pending, processing, delivered, cancelled]
+ *                 description: New status of the request
+ *                 example: processing
+ *     responses:
+ *       200:
+ *         description: Request status updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Request'
+ *       400:
+ *         description: Invalid status value or validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Invalid status value"
+ *       403:
+ *         description: Unauthorized access (manager not assigned to outlet)
+ *       404:
+ *         description: Gas request not found
+ *       500:
+ *         description: Server error
  */
 
 // Add similar docs for GET, GET by ID, PUT, DELETE
