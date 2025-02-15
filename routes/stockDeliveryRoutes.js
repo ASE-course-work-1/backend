@@ -2,7 +2,8 @@ import express from 'express';
 import { 
   updateStock, 
   scheduleDelivery, 
-  confirmDelivery 
+  confirmDelivery,
+  createDelivery
 } from '../controllers/stockDeliveryController.js';
 import { verifyToken, checkRoles } from '../utils/authMiddleware.js';
 
@@ -17,6 +18,83 @@ const router = express.Router();
 
 router.use(verifyToken);
 router.use(checkRoles(['admin', 'outlet_manager']));
+
+/**
+ * @swagger
+ * /api/stock/deliveries:
+ *   post:
+ *     summary: Create a new delivery schedule
+ *     tags: [Stock & Delivery]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - outletId
+ *               - scheduledDate
+ *             properties:
+ *               outletId:
+ *                 type: string
+ *                 example: 65f7b1e66a2d4c3a74e3f4a2
+ *               scheduledDate:
+ *                 type: string
+ *                 format: date-time
+ *                 example: 2024-03-20T14:30:00Z
+ *               requestId:
+ *                 type: string
+ *                 example: 65f7b1e66a2d4c3a74e3f4a1
+ *     responses:
+ *       201:
+ *         description: Successfully created new delivery schedule
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Delivery'
+ *       400:
+ *         description: Invalid input data
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
+router.post('/deliveries', createDelivery);
+
+/**
+ * @swagger
+ * /api/stock/confirm/{deliveryId}:
+ *   post:
+ *     summary: Confirm delivery completion
+ *     tags: [Stock & Delivery]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: deliveryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: 65f7b1e66a2d4c3a74e3f4a3
+ *     responses:
+ *       200:
+ *         description: Delivery confirmed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Delivery'
+ *       401:
+ *         description: Unauthorized (missing or invalid token)
+ *       403:
+ *         description: Forbidden (insufficient permissions)
+ *       404:
+ *         description: Delivery not found
+ *       500:
+ *         description: Server error
+ */
+router.post('/confirm/:deliveryId', confirmDelivery);
 
 /**
  * @swagger
@@ -90,21 +168,5 @@ router.post('/:outletId', updateStock);
  *         description: Forbidden (insufficient permissions)
  */
 router.get('/schedule/:outletId', scheduleDelivery);
-
-/**
- * @swagger
- * /api/stock/confirm/{deliveryId}:
- *   post:
- *     summary: Confirm delivery completion
- *     tags: [Stock & Delivery]
- *     parameters:
- *       - in: path
- *         name: deliveryId
- *         required: true
- *     responses:
- *       200:
- *         description: Delivery confirmed
- */
-router.post('/confirm/:deliveryId', confirmDelivery);
 
 export default router; 

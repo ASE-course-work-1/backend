@@ -242,4 +242,160 @@ const getStatusColor = (status) => {
     cancelled: '#f44336'
   };
   return colors[status] || '#666';
-}; 
+};
+
+export const deliveryConfirmationManagerTemplate = (delivery) => `
+  <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
+    <div style="background: linear-gradient(135deg, #3498db, #2c3e50); padding: 32px; text-align: center;">
+      <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">
+        🚚 Delivery Confirmed
+      </h1>
+    </div>
+
+    <div style="padding: 32px;">
+      <p style="font-size: 16px; color: #4a5568; line-height: 1.6;">
+        Delivery details for ${delivery.outletId.name}:
+      </p>
+      
+      <div style="background-color: #f7fafc; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
+        <div style="display: grid; gap: 16px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 24px;">📦</span>
+            <div>
+              <div style="font-size: 14px; color: #718096;">Delivery ID</div>
+              <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">${delivery._id}</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 24px;">📅</span>
+            <div>
+              <div style="font-size: 14px; color: #718096;">Completed At</div>
+              <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">
+                ${new Date(delivery.updatedAt).toLocaleString()}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+`;
+
+export const deliveryConfirmationUserTemplate = (userName, token) => `
+  <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
+    <div style="background: linear-gradient(135deg, #4CAF50, #2c3e50); padding: 32px; text-align: center;">
+      <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">
+        ✅ Delivery Completed
+      </h1>
+    </div>
+
+    <div style="padding: 32px;">
+      <p style="font-size: 16px; color: #4a5568; line-height: 1.6;">
+        Hello ${userName}, your gas delivery is complete!
+      </p>
+      
+      <div style="background-color: #f7fafc; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
+        <div style="text-align: center;">
+          <div style="font-size: 48px; margin-bottom: 16px;">⛽</div>
+          <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">
+            Token: ${token}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+`;
+
+export const scheduledDeliveryManagerTemplate = (outlet, delivery) => `
+  <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
+    <div style="background: linear-gradient(135deg, #3498db, #2c3e50); padding: 32px; text-align: center;">
+      <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        🚚 New Delivery Scheduled
+      </h1>
+    </div>
+
+    <div style="padding: 32px;">
+      <p style="font-size: 16px; color: #4a5568; line-height: 1.6; margin: 0 0 24px 0;">
+        New delivery scheduled for ${outlet.name}:
+      </p>
+
+      <div style="background-color: #f7fafc; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
+        <div style="display: grid; gap: 16px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 24px;">📦</span>
+            <div>
+              <div style="font-size: 14px; color: #718096;">Delivery ID</div>
+              <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">${delivery._id}</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 24px;">📅</span>
+            <div>
+              <div style="font-size: 14px; color: #718096;">Scheduled Date</div>
+              <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">${new Date(delivery.scheduledDate).toLocaleString()}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 24px;">
+        <a href="${process.env.BASE_URL}/manager/deliveries" 
+          style="background-color: #3498db; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500; display: inline-block; transition: background-color 0.3s;">
+          View Deliveries →
+        </a>
+      </div>
+    </div>
+
+    <div style="background-color: #f8f9fa; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
+      <p style="font-size: 12px; color: #718096; margin: 8px 0;">
+        Need help? Contact our support team at
+        <a href="mailto:support@gasbygas.com" style="color: #3498db; text-decoration: none; font-weight: 500;">support@gasbygas.com</a>
+      </p>
+      <p style="font-size: 12px; color: #718096; margin: 8px 0;">
+        © ${new Date().getFullYear()} GasByGas. All rights reserved.
+      </p>
+    </div>
+  </div>
+`;
+
+export const scheduledDeliveryUserTemplate = (userName, delivery) => `
+  <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
+    <div style="background: linear-gradient(135deg, #3498db, #2c3e50); padding: 32px; text-align: center;">
+      <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        🚚 Delivery Scheduled
+      </h1>
+    </div>
+
+    <div style="padding: 32px;">
+      <p style="font-size: 16px; color: #4a5568; line-height: 1.6; margin: 0 0 24px 0;">
+        Hello ${userName}, your delivery is scheduled for:
+      </p>
+
+      <div style="background-color: #f7fafc; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
+        <div style="text-align: center;">
+          <div style="font-size: 48px; margin-bottom: 16px;">⛽</div>
+          <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">
+            ${new Date(delivery.scheduledDate).toLocaleString()}
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 24px;">
+        <a href="${process.env.BASE_URL}/request-status" 
+          style="background-color: #3498db; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500; display: inline-block; transition: background-color 0.3s;">
+          View Request Details →
+        </a>
+      </div>
+    </div>
+
+    <div style="background-color: #f8f9fa; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
+      <p style="font-size: 12px; color: #718096; margin: 8px 0;">
+        Need help? Contact our support team at
+        <a href="mailto:support@gasbygas.com" style="color: #3498db; text-decoration: none; font-weight: 500;">support@gasbygas.com</a>
+      </p>
+      <p style="font-size: 12px; color: #718096; margin: 8px 0;">
+        © ${new Date().getFullYear()} GasByGas. All rights reserved.
+      </p>
+    </div>
+  </div>
+`; 

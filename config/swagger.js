@@ -43,6 +43,75 @@ const options = {
             district: { type: 'string' },
             contact: { type: 'string' }
           }
+        },
+        Delivery: {
+          type: 'object',
+          properties: {
+            _id: { 
+              type: 'string',
+              example: '65f7b1e66a2d4c3a74e3f4a3'
+            },
+            outletId: {
+              type: 'string',
+              example: '65f7b1e66a2d4c3a74e3f4a2',
+              description: 'Reference to Outlet ID'
+            },
+            requestId: {
+              type: 'string',
+              example: '65f7b1e66a2d4c3a74e3f4a1',
+              description: 'Reference to Gas Request ID'
+            },
+            scheduledDate: {
+              type: 'string',
+              format: 'date-time',
+              example: '2024-03-20T14:30:00Z'
+            },
+            status: {
+              type: 'string',
+              enum: ['scheduled', 'delivered', 'canceled'],
+              example: 'scheduled'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              example: '2024-03-15T09:00:00Z'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              example: '2024-03-15T09:00:00Z'
+            }
+          }
+        }
+      },
+      responses: {
+        UnauthorizedError: {
+          description: 'Missing or invalid authentication token',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  success: { type: 'boolean', example: false },
+                  message: { type: 'string', example: 'No token provided' }
+                }
+              }
+            }
+          }
+        },
+        ForbiddenError: {
+          description: 'Insufficient permissions',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  success: { type: 'boolean', example: false },
+                  message: { type: 'string', example: 'Insufficient permissions' }
+                }
+              }
+            }
+          }
         }
       }
     },
