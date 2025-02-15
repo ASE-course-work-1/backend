@@ -4,7 +4,7 @@ import {
   scheduleDelivery, 
   confirmDelivery 
 } from '../controllers/stockDeliveryController.js';
-import { authMiddleware } from '../utils/authMiddleware.js';
+import { verifyToken, checkRoles } from '../utils/authMiddleware.js';
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ const router = express.Router();
  *   description: Inventory management and delivery scheduling
  */
 
-router.use(authMiddleware);
+router.use(verifyToken, checkRoles(['admin', 'outlet_manager']));
 
 /**
  * @swagger

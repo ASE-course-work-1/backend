@@ -5,7 +5,10 @@ const outletSchema = new mongoose.Schema({
   location: { type: String, required: true },
   district: { type: String, required: true },
   contact: { type: String, required: true },
-  managerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  manager: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User' 
+  },
   capacity: { type: Number, required: true },
   currentStock: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },

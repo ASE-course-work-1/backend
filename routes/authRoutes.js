@@ -1,7 +1,7 @@
 import express from 'express';
 import { register, login, verifyIdentity } from '../controllers/authController.js';
 import { check } from 'express-validator';
-import { authMiddleware } from '../utils/authMiddleware.js';
+import { verifyToken, checkRoles } from '../utils/authMiddleware.js';
 
 const router = express.Router();
 
@@ -105,6 +105,8 @@ router.post('/login', login);
  *         description: Email verified successfully
  *       400:
  *         description: Invalid or expired token
+ *     security:
+ *       - []
  */
 router.post('/verify-identity', verifyIdentity);
 

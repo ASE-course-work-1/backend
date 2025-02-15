@@ -1,4 +1,5 @@
 import { sendEmail } from '../utils/emailSender.js';
+import Notification from '../models/Notification.js';
 
 export const sendEmailNotification = async (req, res) => {
   try {
@@ -9,6 +10,16 @@ export const sendEmailNotification = async (req, res) => {
       req.body.html
     );
     res.json({ message: 'Email sent successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getNotifications = async (req, res) => {
+  try {
+    // Implementation to fetch notifications
+    const notifications = await Notification.find({ userId: req.user.id });
+    res.json(notifications);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

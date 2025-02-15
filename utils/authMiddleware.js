@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import ApiResponse from './apiResponse.js';
 
-export const authMiddleware = (req, res, next) => {
+export const verifyToken = (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
   
   if (!token) {
@@ -17,7 +17,7 @@ export const authMiddleware = (req, res, next) => {
   }
 };
 
-export const roleMiddleware = (roles) => {
+export const checkRoles = (roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return ApiResponse.forbidden(res, 'Insufficient permissions');

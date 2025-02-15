@@ -22,9 +22,29 @@ const options = {
         bearerAuth: {
           type: 'http',
           scheme: 'bearer',
-          bearerFormat: 'JWT',
+          bearerFormat: 'JWT'
         },
       },
+      schemas: {
+        Outlet: {
+          type: 'object',
+          required: ['name', 'location'],
+          properties: {
+            name: { type: 'string' },
+            location: { type: 'string' },
+            manager: { type: 'string', description: 'User ID of outlet manager' }
+          }
+        },
+        PublicOutlet: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            location: { type: 'string' },
+            district: { type: 'string' },
+            contact: { type: 'string' }
+          }
+        }
+      }
     },
   },
   apis: ['./routes/*.js'],

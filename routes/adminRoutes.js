@@ -1,6 +1,6 @@
 import express from 'express';
-import { getOutletStatus, generateReports } from '../controllers/adminController.js';
-import { authMiddleware } from '../utils/authMiddleware.js';
+import { getOutletStatus, generateReports, updateUser } from '../controllers/adminController.js';
+import { verifyToken, checkRoles } from '../utils/authMiddleware.js';
 
 const router = express.Router();
 
@@ -11,7 +11,8 @@ const router = express.Router();
  *   description: Administrative endpoints
  */
 
-router.use(authMiddleware);
+router.use(verifyToken);
+router.use(checkRoles(['admin']));
 
 /**
  * @swagger
@@ -36,5 +37,7 @@ router.get('/outlets', getOutletStatus);
  *         description: Report data
  */
 router.get('/reports', generateReports);
+
+router.put('/users/:id', verifyToken, checkRoles(['admin']), updateUser);
 
 export default router; 

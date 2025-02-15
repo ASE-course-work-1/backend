@@ -1,6 +1,6 @@
 import express from 'express';
-import { sendEmailNotification } from '../controllers/notificationController.js';
-import { authMiddleware } from '../utils/authMiddleware.js';
+import { sendEmailNotification, getNotifications } from '../controllers/notificationController.js';
+import { verifyToken, checkRoles } from '../utils/authMiddleware.js';
 
 const router = express.Router();
 
@@ -11,7 +11,7 @@ const router = express.Router();
  *   description: SMS and email notifications
  */
 
-router.use(authMiddleware);
+router.use(verifyToken, checkRoles(['consumer', 'outlet_manager', 'admin']));
 
 /**
  * @swagger
@@ -43,5 +43,7 @@ router.use(authMiddleware);
  *         description: Email sent
  */
 router.post('/email', sendEmailNotification);
+
+router.get('/', verifyToken, checkRoles(['consumer', 'outlet_manager', 'admin']), getNotifications);
 
 export default router; 

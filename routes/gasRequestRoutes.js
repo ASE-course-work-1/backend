@@ -4,7 +4,7 @@ import {
   checkAvailability, 
   getTokenStatus 
 } from '../controllers/gasRequestController.js';
-import { authMiddleware } from '../utils/authMiddleware.js';
+import { verifyToken, checkRoles } from '../utils/authMiddleware.js';
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ const router = express.Router();
  *   description: Gas cylinder request management
  */
 
-router.use(authMiddleware);
+router.use(verifyToken, checkRoles(['consumer']));
 
 /**
  * @swagger
@@ -40,7 +40,10 @@ router.use(authMiddleware);
  *       201:
  *         description: Request created
  */
-router.post('/', requestGas);
+router.post('/', 
+  verifyToken, checkRoles(['consumer']),
+  requestGas
+);
 
 /**
  * @swagger
