@@ -1,5 +1,7 @@
 import Outlet from '../models/Outlet.js';
 import User from '../models/User.js';
+import { sendEmail } from '../utils/emailSender.js';
+import { managerAssignmentTemplate } from '../utils/emailTemplates.js';
 
 export const createOutlet = async (req, res) => {
   try {
@@ -74,15 +76,36 @@ export const assignManager = async (req, res) => {
       return res.status(404).json({ message: 'Outlet not found' });
     }
 
-    // Verify manager role
     const managerUser = await User.findById(managerId);
     if (managerUser.role !== 'outlet_manager') {
       return res.status(400).json({ message: 'User is not an outlet manager' });
     }
 
+    // Send assignment email
+    await sendEmail(
+      managerUser.email,
+      'Outlet Manager Assignment Notification',
+      `You've been assigned to manage ${outlet.name}`,
+      managerAssignmentTemplate(
+        managerUser.name,
+        {
+          name: outlet.name,
+          location: outlet.location,
+          district: outlet.district,
+          contact: outlet.contact,
+          capacity: outlet.capacity
+        }
+      )
+    );
+
     res.json(outlet);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Manager assignment failed:', error);
+    res.status(500).json({ 
+      message: 'Manager assigned but notification failed',
+      error: error.message,
+      outlet
+    });
   }
 };
 

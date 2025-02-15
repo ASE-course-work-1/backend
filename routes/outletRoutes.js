@@ -122,6 +122,10 @@ router.put('/:id/manager', verifyToken, checkRoles(['admin']), assignManager);
  *     responses:
  *       200:
  *         description: Manager assigned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Outlet'
  *       400:
  *         description: Invalid manager assignment
  *       404:
