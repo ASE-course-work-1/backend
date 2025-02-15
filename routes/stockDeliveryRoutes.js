@@ -3,7 +3,8 @@ import {
   updateStock, 
   scheduleDelivery, 
   confirmDelivery,
-  createDelivery
+  createDelivery,
+  updateDeliveryStatus
 } from '../controllers/stockDeliveryController.js';
 import { verifyToken, checkRoles } from '../utils/authMiddleware.js';
 
@@ -62,6 +63,52 @@ router.use(checkRoles(['admin', 'outlet_manager']));
  *         $ref: '#/components/responses/ForbiddenError'
  */
 router.post('/deliveries', createDelivery);
+
+/**
+ * @swagger
+ * /api/stock/deliveries/{deliveryId}:
+ *   put:
+ *     summary: Update delivery status
+ *     tags: [Stock & Delivery]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: deliveryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: 65f7b1e66a2d4c3a74e3f4a3
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [scheduled, delivered, canceled]
+ *                 example: delivered
+ *     responses:
+ *       200:
+ *         description: Delivery status updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Delivery'
+ *       400:
+ *         description: Invalid status value
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         description: Delivery not found
+ */
+router.put('/deliveries/:deliveryId', updateDeliveryStatus);
 
 /**
  * @swagger

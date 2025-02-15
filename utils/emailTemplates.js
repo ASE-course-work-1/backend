@@ -178,34 +178,50 @@ export const newRequestTemplate = (consumer, request, outlet) => `
   </div>
 `;
 
-export const statusUpdateTemplate = (userName, status, token) => `
+export const statusUpdateTemplate = (userName, status, deliveryId, requestId, token) => `
   <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
     <div style="background: linear-gradient(135deg, #3498db, #2c3e50); padding: 32px; text-align: center;">
       <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
-        🚚 Gas Request Update
+        🚚 Delivery Status Updated
       </h1>
     </div>
 
     <div style="padding: 32px;">
       <p style="font-size: 16px; color: #4a5568; line-height: 1.6; margin: 0 0 24px 0;">
         Hello <strong>${userName}</strong>,<br>
-        Your gas request status has been updated. Here are the details:
+        Your delivery status has been updated. Here are the details:
       </p>
 
       <div style="background-color: #f7fafc; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
         <div style="display: grid; gap: 16px;">
           <div style="display: flex; align-items: center; gap: 12px;">
-            <span style="font-size: 24px;">🔖</span>
+            <span style="font-size: 24px;">📦</span>
             <div>
-              <div style="font-size: 14px; color: #718096;">Request Token</div>
-              <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">${token}</div>
+              <div style="font-size: 14px; color: #718096;">Delivery ID</div>
+              <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">${deliveryId}</div>
             </div>
           </div>
           
           <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 24px;">🔖</span>
+            <div>
+              <div style="font-size: 14px; color: #718096;">Request ID</div>
+              <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">${requestId}</div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 24px;">🔐</span>
+            <div>
+              <div style="font-size: 14px; color: #718096;">Security Token</div>
+              <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">${token}</div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px;">
             <span style="font-size: 24px;">📋</span>
             <div>
-              <div style="font-size: 14px; color: #718096;">Current Status</div>
+              <div style="font-size: 14px; color: #718096;">New Status</div>
               <div style="font-size: 18px; color: ${getStatusColor(status)}; font-weight: 600; text-transform: capitalize;">
                 ${status}
               </div>
@@ -215,9 +231,9 @@ export const statusUpdateTemplate = (userName, status, token) => `
       </div>
 
       <div style="text-align: center; margin-top: 24px;">
-        <a href="${process.env.BASE_URL}/request-status" 
+        <a href="${process.env.BASE_URL}/track-delivery/${deliveryId}" 
           style="background-color: #3498db; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500; display: inline-block; transition: background-color 0.3s;">
-          View Request Details →
+          Track Delivery Status →
         </a>
       </div>
     </div>

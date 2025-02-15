@@ -5,7 +5,8 @@ import {
   deliveryConfirmationManagerTemplate,
   deliveryConfirmationUserTemplate,
   scheduledDeliveryManagerTemplate,
-  scheduledDeliveryUserTemplate
+  scheduledDeliveryUserTemplate,
+  statusUpdateTemplate
 } from '../utils/emailTemplates.js';
 import Request from '../models/Request.js';
 
@@ -43,10 +44,18 @@ export const confirmDelivery = async (req, res) => {
       })
       .populate({
         path: 'requestId',
-        populate: { path: 'consumerId', select: 'email name' }
+        populate: { 
+          path: 'consumerId',
+          select: 'email name',
+          model: 'User'
+        }
       });
 
     if (!delivery) return res.status(404).json({ message: 'Delivery not found' });
+
+    if (!delivery.requestId?.consumerId) {
+      throw new Error('Invalid request data - missing consumer information');
+    }
 
     delivery.status = 'delivered';
     delivery.confirmedBy = req.user.id;
@@ -108,6 +117,67 @@ export const createDelivery = async (req, res) => {
     );
 
     res.status(201).json(savedDelivery);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const updateDeliveryStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const delivery = await Delivery.findByIdAndUpdate(
+      req.params.deliveryId,
+      { status },
+      { new: true }
+    )
+    .populate({
+      path: 'outletId',
+      populate: { path: 'manager', select: 'email name' }
+    })
+    .populate({
+      path: 'requestId',
+      select: 'consumerId status token',
+      populate: { 
+        path: 'consumerId',
+        select: 'email name',
+        model: 'User'
+      }
+    });
+
+    if (!delivery) return res.status(404).json({ message: 'Delivery not found' });
+    
+    if (!delivery.requestId || !delivery.requestId.consumerId) {
+      return res.status(400).json({ message: 'Invalid request data' });
+    }
+
+    // Send status update emails
+    await sendEmail(
+      delivery.outletId.manager.email,
+      'Delivery Status Updated',
+      `Delivery ${delivery._id} status changed to ${status}`,
+      statusUpdateTemplate(
+        delivery.outletId.manager.name,
+        status,
+        delivery._id,
+        delivery.requestId._id,
+        delivery.requestId.token
+      )
+    );
+
+    await sendEmail(
+      delivery.requestId.consumerId.email,
+      'Delivery Status Update',
+      `Your delivery status has been updated to ${status}`,
+      statusUpdateTemplate(
+        delivery.requestId.consumerId.name,
+        status,
+        delivery._id,
+        delivery.requestId._id,
+        delivery.requestId.token
+      )
+    );
+
+    res.json(delivery);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

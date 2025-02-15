@@ -1,21 +1,24 @@
 import mongoose from 'mongoose';
 
 const requestSchema = new mongoose.Schema({
-  consumerId: { 
-    type: mongoose.Schema.Types.ObjectId, 
+  consumerId: {
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true 
+    required: true
   },
-  outletId: { 
-    type: mongoose.Schema.Types.ObjectId, 
+  outletId: {
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Outlet',
-    required: true 
+    required: true
   },
-  token: { type: String, required: true },
-  status: { 
-    type: String, 
-    enum: ['pending', 'scheduled', 'completed', 'canceled'],
+  status: {
+    type: String,
+    enum: ['pending', 'processing', 'delivered', 'cancelled'],
     default: 'pending'
+  },
+  token: {
+    type: String,
+    unique: true
   },
   quantity: { 
     type: Number, 
@@ -29,7 +32,10 @@ const requestSchema = new mongoose.Schema({
     required: true
   },
   pickupDate: Date,
-  createdAt: { type: Date, default: Date.now },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
   updatedAt: { type: Date, default: Date.now }
 });
 

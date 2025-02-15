@@ -6,6 +6,11 @@ const deliverySchema = new mongoose.Schema({
     ref: 'Outlet',
     required: true 
   },
+  requestId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Request',
+    required: true
+  },
   scheduledDate: { type: Date, required: true },
   confirmedBy: { 
     type: mongoose.Schema.Types.ObjectId, 
@@ -21,8 +26,13 @@ const deliverySchema = new mongoose.Schema({
 });
 
 deliverySchema.pre('save', function(next) {
+  if (!this.requestId) {
+    return next(new Error('Delivery must be associated with a request'));
+  }
   this.updatedAt = Date.now();
   next();
 });
+
+deliverySchema.index({ outletId: 1, requestId: 1 }, { unique: true });
 
 export default mongoose.model('Delivery', deliverySchema); 
