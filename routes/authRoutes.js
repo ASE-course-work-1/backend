@@ -84,8 +84,7 @@ router.post('/login', login);
  * @swagger
  * /api/auth/verify-identity:
  *   post:
- *     summary: Verify user email
- *     tags: [Authentication]
+ *     summary: Verify user email with OTP
  *     requestBody:
  *       required: true
  *       content:
@@ -93,10 +92,13 @@ router.post('/login', login);
  *           schema:
  *             type: object
  *             required:
- *               - token
+ *               - email
+ *               - otp
  *             properties:
- *               token:
+ *               email:
  *                 type: string
+ *               otp:
+ *                 type: integer
  *     responses:
  *       200:
  *         description: Email verified successfully

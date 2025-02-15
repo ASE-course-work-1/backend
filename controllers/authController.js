@@ -102,20 +102,27 @@ export const verifyIdentity = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    const user = await User.findOne({ email });
+    // Validate input
+    if (!email || !otp) {
+      return res.status(400).json({ message: 'Email and OTP are required' });
+    }
 
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'User not found' });
     }
 
+    // Check if OTP matches
     if (user.verificationOTP !== parseInt(otp)) {
       return res.status(400).json({ message: 'Invalid OTP' });
     }
 
+    // Check OTP expiration
     if (Date.now() > user.otpExpires) {
       return res.status(400).json({ message: 'OTP has expired' });
     }
 
+    // Mark user as verified and clear OTP
     user.isVerified = true;
     user.verificationOTP = undefined;
     user.otpExpires = undefined;
@@ -123,6 +130,7 @@ export const verifyIdentity = async (req, res) => {
 
     res.json({ message: 'Email verified successfully' });
   } catch (error) {
+    console.error('Verification error:', error);
     res.status(500).json({ message: error.message });
   }
 }; 
