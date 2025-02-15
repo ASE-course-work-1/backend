@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { sendEmail } from '../utils/emailSender.js';
+import { otpTemplate } from '../utils/emailTemplates.js';
 
 export const register = async (req, res) => {
   try {
@@ -28,21 +29,20 @@ export const register = async (req, res) => {
     });
 
     // Create verification token
-    const verificationToken = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
 
     // Send verification email
-    const verificationUrl = `${process.env.BASE_URL}/verify-identity?token=${verificationToken}`;
-    console.log('Verification URL:', verificationUrl);
     await sendEmail(
       user.email,
-      'Verify Your Email',
-      `Please verify your email by clicking: ${verificationUrl}`,
-      `<p>Please verify your email by clicking: <a href="${verificationUrl}">here</a></p>`
+      'Your Verification OTP',
+      `Your OTP is: ${otp}`,
+      otpTemplate(otp)
     );
+
+    // Store OTP in user document
+    user.verificationOTP = otp;
+    user.otpExpires = Date.now() + 600000; // 10 minutes
+    await user.save();
 
     res.status(201).json({
       message: 'User registered successfully. Please check your email to verify your account.'
@@ -100,22 +100,29 @@ export const login = async (req, res) => {
 
 export const verifyIdentity = async (req, res) => {
   try {
-    const { token } = req.body;
+    const { email, otp } = req.body;
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId);
+    const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid verification token' });
+      return res.status(400).json({ message: 'User not found' });
     }
 
-    // Mark user as verified
+    if (user.verificationOTP !== parseInt(otp)) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    if (Date.now() > user.otpExpires) {
+      return res.status(400).json({ message: 'OTP has expired' });
+    }
+
     user.isVerified = true;
+    user.verificationOTP = undefined;
+    user.otpExpires = undefined;
     await user.save();
 
     res.json({ message: 'Email verified successfully' });
   } catch (error) {
-    res.status(400).json({ message: 'Invalid or expired verification token' });
+    res.status(500).json({ message: error.message });
   }
 }; 

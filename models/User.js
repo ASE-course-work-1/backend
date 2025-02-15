@@ -8,7 +8,9 @@ const userSchema = new mongoose.Schema({
   nic: { type: String, required: true, unique: true },
   role: { type: String, enum: ['consumer', 'outlet_manager', 'admin'], default: 'consumer' },
   createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  updatedAt: { type: Date, default: Date.now },
+  verificationOTP: Number,
+  otpExpires: Date
 });
 
 userSchema.pre('save', function(next) {
