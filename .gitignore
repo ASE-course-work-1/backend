@@ -53,3 +53,4 @@ Thumbs.db
 
 # Public assets
 /public/uploads/ 
+node_modules
