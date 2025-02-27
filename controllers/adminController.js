@@ -51,3 +51,22 @@ export const updateUser = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 }; 
+
+export const getUsers = async (req, res) => {
+  try {
+    const { role } = req.query; // Get the 'role' filter from query params
+
+    let filter = {}; // Default filter is an empty object (all users)
+
+    if (role) {
+      filter.role = role; // If 'role' is provided, apply it as a filter
+    }
+
+    // Retrieve users based on the filter (role and/or other criteria)
+    const users = await User.find(filter, '_id name email phone nic role'); // Including role in the response if needed
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
