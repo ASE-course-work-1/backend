@@ -126,3 +126,14 @@ export const getPublicOutlets = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 }; 
+
+export const getOutletsWithoutManager = async (req, res) => {
+  try {
+    const outlets = await Outlet.find({ manager: { $exists: false } }, 'name location district contact _id');
+    res.json(outlets);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
