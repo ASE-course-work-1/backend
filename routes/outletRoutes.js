@@ -1,5 +1,5 @@
 import express from 'express';
-import { createOutlet, getOutlets, getOutlet, updateOutlet, deleteOutlet, getOutletsPublic, getPublicOutlets, assignManager } from '../controllers/outletController.js';
+import { createOutlet, getOutlets, getOutlet, updateOutlet, deleteOutlet, getOutletsPublic, getPublicOutlets, assignManager,getOutletsWithoutManager } from '../controllers/outletController.js';
 import { verifyToken, checkRoles } from '../utils/authMiddleware.js';
 import { registerOutletManager } from '../controllers/authController.js';
 import { updateRequestStatus } from '../controllers/gasRequestController.js';
@@ -8,6 +8,7 @@ const router = express.Router();
 
 // Public routes
 router.get('/public', getPublicOutlets);
+router.get('/noManagers', getOutletsWithoutManager);
 
 // Protected routes
 router.post('/', verifyToken, checkRoles(['admin']), createOutlet);
@@ -201,6 +202,32 @@ router.put('/requests/:id/status',
  *               items:
  *                 $ref: '#/components/schemas/PublicOutlet'
  */
+
+/**
+ * @swagger
+ * /api/outlets/noManagers:
+ *   get:
+ *     summary: Get outlets without a manager
+ *     description: Retrieve a list of outlets where the manager field is either missing, null, or empty.
+ *     tags: [Outlets]
+ *     responses:
+ *       200:
+ *         description: List of outlets without a manager
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: The unique identifier for the outlet
+ *                   name:
+ *                     type: string
+ *                     description: The name of the outlet
+ */
+
 
 /**
  * @swagger
