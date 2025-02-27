@@ -1,5 +1,5 @@
 import express from 'express';
-import { getOutletStatus, generateReports, updateUser } from '../controllers/adminController.js';
+import { getOutletStatus, generateReports, updateUser ,getUsers} from '../controllers/adminController.js';
 import { verifyToken, checkRoles } from '../utils/authMiddleware.js';
 
 const router = express.Router();
@@ -39,5 +39,22 @@ router.get('/outlets', getOutletStatus);
 router.get('/reports', generateReports);
 
 router.put('/users/:id', verifyToken, checkRoles(['admin']), updateUser);
+router.get('/users', verifyToken, checkRoles(['admin']), getUsers);
+
+/**
+ * @swagger
+ * /api/admin/users:
+ *   get:
+ *     summary: Get all users with selected fields(filters can give eg-/api/users?role=admin){admin only}
+ *     description: Retrieve a list of all users, returning only the name, email, phone, and NIC.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of users with selected fields
+ *         
+ */
+
 
 export default router; 
