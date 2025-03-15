@@ -207,3 +207,67 @@ export const updateRequestStatus = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getAllRequests = async (req, res) => {
+  try {
+    const requests = await Request.find()
+      .populate("consumerId", "name email phone")
+      .populate("outletId", "name location district")
+      .sort({ createdAt: -1 });
+    res.json(requests);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getRequestById = async (req, res) => {
+  try {
+    const request = await Request.findById(req.params.id)
+      .populate("consumerId", "name email phone")
+      .populate("outletId", "name location district contact");
+
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    res.json(request);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getRequestsByOutlet = async (req, res) => {
+  try {
+    const { outletId } = req.params;
+    const requests = await Request.find({ outletId })
+      .populate("consumerId", "name email phone")
+      .populate("outletId", "name location district contact")
+      .sort({ createdAt: -1 });
+
+    res.json(requests);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getManagerOutletRequests = async (req, res) => {
+  try {
+    // Find the outlet where the logged-in manager is assigned
+    const outlet = await Outlet.findOne({ manager: req.user.id });
+
+    if (!outlet) {
+      return res
+        .status(404)
+        .json({ message: "No outlet found for this manager" });
+    }
+
+    const requests = await Request.find({ outletId: outlet._id })
+      .populate("consumerId", "name email phone")
+      .populate("outletId", "name location district contact")
+      .sort({ createdAt: -1 });
+
+    res.json(requests);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

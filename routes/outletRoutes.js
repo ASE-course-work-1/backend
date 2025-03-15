@@ -10,6 +10,7 @@ import {
   assignManager,
   getUnassignedManagers,
   getUnassignedOutlets,
+  getAllOutletsPublic,
 } from "../controllers/outletController.js";
 import { verifyToken, checkRoles } from "../utils/authMiddleware.js";
 import { registerOutletManager } from "../controllers/authController.js";
@@ -21,6 +22,7 @@ const router = express.Router();
 router.get("/public", getPublicOutlets);
 router.get("/managers/unassigned", getUnassignedManagers);
 router.get("/unassigned", getUnassignedOutlets); // Correct endpoint placement
+router.get("/all", getAllOutletsPublic); // Add this new route
 
 // Protected routes
 router.post("/", verifyToken, checkRoles(["admin"]), createOutlet);
@@ -411,6 +413,75 @@ router.put(
  *                     type: number
  *                     description: Storage capacity
  *                     example: 1000
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/outlets/all:
+ *   get:
+ *     summary: Get all outlets with full details (Public)
+ *     tags: [Outlets]
+ *     description: Retrieve a list of all outlets with complete information including stock levels and manager details. No authentication required.
+ *     responses:
+ *       200:
+ *         description: List of all outlets
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: Outlet ID
+ *                     example: 65f7b1e66a2d4c3a74e3f4a3
+ *                   name:
+ *                     type: string
+ *                     description: Outlet name
+ *                     example: "Main Branch"
+ *                   location:
+ *                     type: string
+ *                     description: Outlet location
+ *                     example: "City Center"
+ *                   district:
+ *                     type: string
+ *                     description: Outlet district
+ *                     example: "Colombo"
+ *                   contact:
+ *                     type: string
+ *                     description: Contact number
+ *                     example: "0112345678"
+ *                   capacity:
+ *                     type: number
+ *                     description: Maximum storage capacity
+ *                     example: 1000
+ *                   currentStock:
+ *                     type: number
+ *                     description: Current available stock
+ *                     example: 500
+ *                   manager:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: 65f7b1e66a2d4c3a74e3f4a4
+ *                       name:
+ *                         type: string
+ *                         example: "John Doe"
+ *                       email:
+ *                         type: string
+ *                         example: "john@example.com"
  *       500:
  *         description: Server error
  *         content:

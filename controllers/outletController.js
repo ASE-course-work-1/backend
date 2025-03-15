@@ -172,3 +172,15 @@ export const getUnassignedOutlets = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getAllOutletsPublic = async (req, res) => {
+  try {
+    const outlets = await Outlet.find()
+      .select("name location district contact capacity currentStock")
+      .populate("manager", "name email")
+      .sort({ createdAt: -1 });
+    res.json(outlets);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

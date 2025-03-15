@@ -1,7 +1,12 @@
-import express from 'express';
-import { register, login, verifyIdentity } from '../controllers/authController.js';
-import { check } from 'express-validator';
-import { verifyToken, checkRoles } from '../utils/authMiddleware.js';
+import express from "express";
+import {
+  register,
+  login,
+  verifyIdentity,
+  getAllUsers,
+} from "../controllers/authController.js";
+import { check } from "express-validator";
+import { verifyToken, checkRoles } from "../utils/authMiddleware.js";
 
 const router = express.Router();
 
@@ -50,7 +55,7 @@ const router = express.Router();
  *       400:
  *         description: Validation error
  */
-router.post('/register', register);
+router.post("/register", register);
 
 /**
  * @swagger
@@ -78,7 +83,7 @@ router.post('/register', register);
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', login);
+router.post("/login", login);
 
 /**
  * @swagger
@@ -108,6 +113,59 @@ router.post('/login', login);
  *     security:
  *       - []
  */
-router.post('/verify-identity', verifyIdentity);
+router.post("/verify-identity", verifyIdentity);
 
-export default router; 
+// Add new public route for getting all users
+router.get("/users", getAllUsers);
+
+/**
+ * @swagger
+ * /api/auth/users:
+ *   get:
+ *     summary: Get all users (Public)
+ *     tags: [Authentication]
+ *     description: Retrieve a list of all users with basic information. No authentication required.
+ *     responses:
+ *       200:
+ *         description: List of users retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: User ID
+ *                     example: 65f7b1e66a2d4c3a74e3f4a3
+ *                   name:
+ *                     type: string
+ *                     description: User's full name
+ *                     example: John Doe
+ *                   email:
+ *                     type: string
+ *                     description: User's email address
+ *                     example: john@example.com
+ *                   phone:
+ *                     type: string
+ *                     description: User's contact number
+ *                     example: "0712345678"
+ *                   role:
+ *                     type: string
+ *                     description: User's role in the system
+ *                     enum: [consumer, outlet_manager, admin]
+ *                     example: consumer
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+export default router;
