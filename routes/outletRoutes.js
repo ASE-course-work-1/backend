@@ -1,25 +1,54 @@
-import express from 'express';
-import { createOutlet, getOutlets, getOutlet, updateOutlet, deleteOutlet, getOutletsPublic, getPublicOutlets, assignManager } from '../controllers/outletController.js';
-import { verifyToken, checkRoles } from '../utils/authMiddleware.js';
-import { registerOutletManager } from '../controllers/authController.js';
-import { updateRequestStatus } from '../controllers/gasRequestController.js';
+import express from "express";
+import {
+  createOutlet,
+  getOutlets,
+  getOutlet,
+  updateOutlet,
+  deleteOutlet,
+  getOutletsPublic,
+  getPublicOutlets,
+  assignManager,
+  getUnassignedManagers,
+  getUnassignedOutlets,
+} from "../controllers/outletController.js";
+import { verifyToken, checkRoles } from "../utils/authMiddleware.js";
+import { registerOutletManager } from "../controllers/authController.js";
+import { updateRequestStatus } from "../controllers/gasRequestController.js";
 
 const router = express.Router();
 
 // Public routes
-router.get('/public', getPublicOutlets);
+router.get("/public", getPublicOutlets);
+router.get("/managers/unassigned", getUnassignedManagers);
+router.get("/unassigned", getUnassignedOutlets); // Correct endpoint placement
 
 // Protected routes
-router.post('/', verifyToken, checkRoles(['admin']), createOutlet);
-router.get('/', verifyToken, checkRoles(['admin', 'outlet_manager']), getOutlets);
-router.get('/:id', verifyToken, checkRoles(['admin', 'outlet_manager']), getOutlet);
-router.put('/:id', verifyToken, checkRoles(['admin']), updateOutlet);
-router.delete('/:id', verifyToken, checkRoles(['admin']), deleteOutlet);
-router.post('/managers', verifyToken, checkRoles(['admin']), registerOutletManager);
-router.put('/:id/manager', verifyToken, checkRoles(['admin']), assignManager);
-router.put('/requests/:id/status', 
-  verifyToken, 
-  checkRoles(['outlet_manager']), 
+router.post("/", verifyToken, checkRoles(["admin"]), createOutlet);
+router.get(
+  "/",
+  verifyToken,
+  checkRoles(["admin", "outlet_manager"]),
+  getOutlets
+);
+router.get(
+  "/:id",
+  verifyToken,
+  checkRoles(["admin", "outlet_manager"]),
+  getOutlet
+);
+router.put("/:id", verifyToken, checkRoles(["admin"]), updateOutlet);
+router.delete("/:id", verifyToken, checkRoles(["admin"]), deleteOutlet);
+router.post(
+  "/managers",
+  verifyToken,
+  checkRoles(["admin"]),
+  registerOutletManager
+);
+router.put("/:id/manager", verifyToken, checkRoles(["admin"]), assignManager);
+router.put(
+  "/requests/:id/status",
+  verifyToken,
+  checkRoles(["outlet_manager"]),
   updateRequestStatus
 );
 
@@ -296,6 +325,104 @@ router.put('/requests/:id/status',
  *         description: Server error
  */
 
+/**
+ * @swagger
+ * /api/outlets/managers/unassigned:
+ *   get:
+ *     summary: Get outlet managers without assigned outlets (Public)
+ *     tags: [Outlets]
+ *     description: Retrieve a list of outlet managers who are not assigned to any outlet. No authentication required.
+ *     responses:
+ *       200:
+ *         description: List of unassigned outlet managers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: Manager's ID
+ *                     example: 65f7b1e66a2d4c3a74e3f4a3
+ *                   name:
+ *                     type: string
+ *                     description: Manager's full name
+ *                     example: John Doe
+ *                   email:
+ *                     type: string
+ *                     description: Manager's email address
+ *                     example: john@example.com
+ *                   phone:
+ *                     type: string
+ *                     description: Manager's contact number
+ *                     example: "0712345678"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/outlets/unassigned:
+ *   get:
+ *     summary: Get outlets without assigned managers (Public)
+ *     tags: [Outlets]
+ *     description: Retrieve a list of outlets that don't have managers assigned. No authentication required.
+ *     responses:
+ *       200:
+ *         description: List of unassigned outlets
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: Outlet ID
+ *                     example: 65f7b1e66a2d4c3a74e3f4a3
+ *                   name:
+ *                     type: string
+ *                     description: Outlet name
+ *                     example: "Main Branch"
+ *                   location:
+ *                     type: string
+ *                     description: Outlet location
+ *                     example: "City Center"
+ *                   district:
+ *                     type: string
+ *                     description: Outlet district
+ *                     example: "Colombo"
+ *                   contact:
+ *                     type: string
+ *                     description: Contact number
+ *                     example: "0112345678"
+ *                   capacity:
+ *                     type: number
+ *                     description: Storage capacity
+ *                     example: 1000
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
 // Add similar docs for GET, GET by ID, PUT, DELETE
 
-export default router; 
+export default router;
