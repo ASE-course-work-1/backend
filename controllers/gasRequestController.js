@@ -56,34 +56,89 @@ export const requestGas = async (req, res) => {
       );
     }
 
-    // Send confirmation email to consumer
+    // Send confirmation email to consumer with consistent template
     await sendEmail(
       consumer.email,
       "Gas Request Confirmation",
       `Your gas request has been received`,
       `
-      <!DOCTYPE html>
-      <html>
-      <body style="font-family: Arial, sans-serif;">
-        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2>Gas Request Confirmation</h2>
-          <p>Dear ${consumer.name},</p>
-          <p>Your gas request has been received successfully.</p>
-          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-            <p><strong>Request Details:</strong></p>
-            <ul style="list-style: none; padding: 0;">
-              <li>Token: ${token}</li>
-              <li>Quantity: ${quantity} cylinder(s)</li>
-              <li>Delivery Address: ${address}</li>
-              <li>Outlet: ${outlet.name}</li>
-              <li>Status: Pending</li>
-            </ul>
-          </div>
-          <p>You can track your request using the token: ${token}</p>
-          <p>We will notify you when your request status changes.</p>
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #3498db, #2c3e50); padding: 32px; text-align: center;">
+          <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">
+            🛢️ Gas Request Confirmation
+          </h1>
         </div>
-      </body>
-      </html>
+
+        <div style="padding: 32px;">
+          <p style="font-size: 16px; color: #4a5568; line-height: 1.6; margin: 0 0 24px 0;">
+            Dear ${consumer.name},<br>
+            Your gas request has been received successfully.
+          </p>
+
+          <div style="background-color: #f7fafc; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
+            <div style="display: grid; gap: 16px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 24px;">🎫</span>
+                <div>
+                  <div style="font-size: 14px; color: #718096;">Request Token</div>
+                  <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">${token}</div>
+                </div>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 24px;">🛢️</span>
+                <div>
+                  <div style="font-size: 14px; color: #718096;">Quantity</div>
+                  <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">${quantity} cylinder(s)</div>
+                </div>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 24px;">📍</span>
+                <div>
+                  <div style="font-size: 14px; color: #718096;">Delivery Address</div>
+                  <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">${address}</div>
+                </div>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 24px;">🏪</span>
+                <div>
+                  <div style="font-size: 14px; color: #718096;">Outlet</div>
+                  <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">${
+                    outlet.name
+                  }</div>
+                </div>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 24px;">⏳</span>
+                <div>
+                  <div style="font-size: 14px; color: #718096;">Status</div>
+                  <div style="font-size: 18px; color: #2c3e50; font-weight: 600;">Pending</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 24px;">
+            <a href="${process.env.BASE_URL}/track-request/${token}" 
+              style="background-color: #3498db; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500; display: inline-block; transition: background-color 0.3s;">
+              Track Your Request →
+            </a>
+          </div>
+        </div>
+
+        <div style="background-color: #f8f9fa; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
+          <p style="font-size: 12px; color: #718096; margin: 8px 0;">
+            Need help? Contact our support team at
+            <a href="mailto:support@gasbygas.com" style="color: #3498db; text-decoration: none; font-weight: 500;">support@gasbygas.com</a>
+          </p>
+          <p style="font-size: 12px; color: #718096; margin: 8px 0;">
+            © ${new Date().getFullYear()} GasByGas. All rights reserved.
+          </p>
+        </div>
+      </div>
       `
     );
 
