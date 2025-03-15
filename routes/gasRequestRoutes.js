@@ -19,6 +19,12 @@ const router = express.Router();
  *   description: Gas cylinder request management
  */
 
+// Public routes
+router.get("/all", getAllRequests);
+router.get("/:id", getRequestById); // Moved out of protected routes, no auth middleware
+router.get("/outlet/:outletId", getRequestsByOutlet);
+
+// Protected routes with auth
 router.use(verifyToken, checkRoles(["consumer"]));
 
 /**
@@ -200,8 +206,6 @@ router.get("/status/:token", getTokenStatus);
  *                   example: Internal server error
  */
 
-router.get("/all", getAllRequests);
-
 /**
  * @swagger
  * /api/requests/{id}:
@@ -290,8 +294,6 @@ router.get("/all", getAllRequests);
  *         description: Server error
  */
 
-router.get("/:id", getRequestById);
-
 /**
  * @swagger
  * /api/requests/outlet/{outletId}:
@@ -376,8 +378,6 @@ router.get("/:id", getRequestById);
  *                   type: string
  *                   example: Internal server error
  */
-
-router.get("/outlet/:outletId", getRequestsByOutlet);
 
 /**
  * @swagger
